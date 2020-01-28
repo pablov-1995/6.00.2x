@@ -85,10 +85,7 @@ class RectangularRoom(object):
         """
         self.width = width
         self.height = height
-        tiles = dict()
-        for unitw in range(width):
-            for unith in range(height):
-                tiles[(unitw, unith)] = 'Dirty'
+        tiles = {(x, y): 'Dirty' for y in range(height) for x in range(width)}
         self.tiles = tiles
 
     def cleanTileAtPosition(self, pos):
@@ -127,11 +124,8 @@ class RectangularRoom(object):
 
         returns: an integer
         """
-        total = 0
-        for tile in self.tiles.items():
-            if tile[1] == 'Clean':
-                total += 1
-        return total
+        clean_tiles = [tile for tile in self.tiles.items() if tile[1] == 'Clean']
+        return len(clean_tiles)
 
     def getRandomPosition(self):
         """
@@ -218,12 +212,9 @@ class Robot(object):
         been cleaned.
         """
         raise NotImplementedError  # don't change this!
-        self.room.cleanTileAtPosition(self.position)
-        while True:
-            newpos = self.position.getNewPosition(self.direction, self.speed)
-            if newpos.getX() < room.width and newpos.getY < room.height:
-                break
+        newpos = self.position.getNewPosition(self.direction, self.speed)
         self.position = newpos
+        self.room.cleanTileAtPosition(self.position)
 
 # === Problem 3
 class StandardRobot(Robot):
@@ -271,16 +262,14 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
     for i in range(num_trials):
         steps = 0
         room = RectangularRoom(width, height)
-        robots = []
-        for i in range(num_robots):
-            robots.append(robot_type(room, speed))
-        while True:
+        robots = [robot_type(room, speed) for i in range(num_robots)]
+        # Initialising percentage with the minimum possible value
+        percentage = 0
+        while percentage < min_coverage:
             steps += 1
             for robot in robots:
                 robot.updatePositionAndClean()
             percentage = room.getNumCleanedTiles() / room.getNumTiles()
-            if percentage >= min_coverage:
-                break
         trials_steps.append(steps)
     return sum(trials_steps) / len(trials_steps)
 
@@ -313,8 +302,8 @@ def showPlot1(title, x_label, y_label):
     times2 = []
     for num_robots in num_robot_range:
         print("Plotting", num_robots, "robots...")
-        times1.append(runSimulation(num_robots, 1.0, 20, 20, 0.8, 20, StandardRobot))
-        times2.append(runSimulation(num_robots, 1.0, 20, 20, 0.8, 20, RandomWalkRobot))
+        times1 = [runSimulation(num_robots, 1.0, 20, 20, 0.8, 20, StandardRobot)]
+        times2 = [runSimulation(num_robots, 1.0, 20, 20, 0.8, 20, RandomWalkRobot)]
     pylab.plot(num_robot_range, times1)
     pylab.plot(num_robot_range, times2)
     pylab.title(title)
