@@ -175,7 +175,7 @@ def simulationWithoutDrug(numViruses = 100, maxPop = 1000, maxBirthProb = 0.1, c
     """
 
     viruses = [SimpleVirus(maxBirthProb, clearProb) for i in range(numViruses)]
-    total = [0 for i in range(300)]
+    total = [0] * 300
 
     for trial in range(numTrials):
         patient = Patient(viruses, maxPop)
