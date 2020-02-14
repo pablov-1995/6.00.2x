@@ -211,7 +211,6 @@ class Robot(object):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        raise NotImplementedError  # don't change this!
         newpos = self.position.getNewPosition(self.direction, self.speed)
         self.position = newpos
         self.room.cleanTileAtPosition(self.position)
@@ -274,7 +273,7 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
     return sum(trials_steps) / len(trials_steps)
 
 # Uncomment this line to see how much your simulation takes on average
-##print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
+print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
 
 
 # === Problem 5
@@ -295,15 +294,15 @@ class RandomWalkRobot(Robot):
 
 def showPlot1(title, x_label, y_label):
     """
-    What information does the plot produced by this function tell you?
+    Plot the average of steps it takes to clean 80% of a room for a number X of robots (being Standard or RandomWalk)
     """
     num_robot_range = range(1, 11)
     times1 = []
     times2 = []
     for num_robots in num_robot_range:
         print("Plotting", num_robots, "robots...")
-        times1 = [runSimulation(num_robots, 1.0, 20, 20, 0.8, 20, StandardRobot)]
-        times2 = [runSimulation(num_robots, 1.0, 20, 20, 0.8, 20, RandomWalkRobot)]
+        times1.append(runSimulation(num_robots, 1.0, 20, 20, 0.8, 20, StandardRobot))
+        times2.append(runSimulation(num_robots, 1.0, 20, 20, 0.8, 20, RandomWalkRobot))
     pylab.plot(num_robot_range, times1)
     pylab.plot(num_robot_range, times2)
     pylab.title(title)
@@ -315,7 +314,8 @@ def showPlot1(title, x_label, y_label):
     
 def showPlot2(title, x_label, y_label):
     """
-    What information does the plot produced by this function tell you?
+    Given a total surface of 300 m2, plot how many steps it takes to clean a room to two robots that can be
+    Standard or RandomWalk depending on the aspect ratio of the room.
     """
     aspect_ratios = []
     times1 = []
@@ -342,13 +342,11 @@ def showPlot2(title, x_label, y_label):
 #
 # 1) Write a function call to showPlot1 that generates an appropriately-labeled
 #     plot.
-#
-#       (... your call here ...)
-#
+
+showPlot1('Steps it takes to clean a room to a variable number of robots', 'Number of Robots', 'Steps')
 
 #
 # 2) Write a function call to showPlot2 that generates an appropriately-labeled
 #     plot.
-#
-#       (... your call here ...)
-#
+
+showPlot2('Steps it takes to clean a 300 m2 room to 2 robots', 'Aspect Ratio of the Room', 'Steps')

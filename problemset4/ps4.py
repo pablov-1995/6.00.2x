@@ -133,10 +133,7 @@ def generate_models(x, y, degs):
     import numpy as np
     xVals = np.array(x)
     yVals = np.array(y)
-    result = []
-    for i in range(len(degs)):
-        model = np.polyfit(xVals, yVals, degs[i])
-        result.append(model)
+    result = [np.polyfit(xVals, yVals, degs[i]) for i in range(len(degs))]
     return result
 
 # Problem 2
@@ -149,16 +146,22 @@ def r_squared(y, estimated):
     Returns:
         a float for the R-squared error term
     """
-    mean = sum(y)/len(y)
+    from statistics import mean
+    mean = mean(y)
     numerator = 0
+
     for i in range(len(y)):
         value = (y[i] - estimated[i])**2
         numerator += value
+
     denominator = 0
+
     for i in range(len(y)):
         value = (y[i] - mean)**2
         denominator += value
+
     result = 1 - (numerator/denominator)
+
     return result
 
 # Problem 3
@@ -183,8 +186,17 @@ def evaluate_models_on_training(x, y, models):
     Returns:
         None
     """
-    # TODO
-    pass
+    xVals, yVals = pylab.array(x), pylab.array(y)
+    for i in models:
+        pylab.plot(xVals, yVals, 'bo', label='Measured points')
+        pylab.title('Temperature vs. time')
+        pylab.xlabel('Year')
+        pylab.ylabel('Temperature')
+        a, b = models[0][0], models[0][1]
+        estYVals = a * xVals + b
+        pylab.plot(xVals, estYVals, label='R^2 =' + str(r_squared(yVals, estYVals)))
+        pylab.legend(loc='best')
+        pylab.show()
 
 
 ### Begining of program
@@ -204,5 +216,8 @@ x1 = INTERVAL_1
 x2 = INTERVAL_2
 y = []
 # MISSING LINES
-# models = generate_models(x, y, [1])
-# evaluate_models_on_training(x, y, models)
+for year in INTERVAL_1:
+    y.append(np.mean(raw_data.get_yearly_temp('BOSTON', year)))
+
+models = generate_models(x, y, [1])
+evaluate_models_on_training(x, y, models)
